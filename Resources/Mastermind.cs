@@ -18,27 +18,36 @@ namespace Mastermind.Resources
         public List<ResultPeg> GetHints(List<CodePeg> guess)
         {
             List<ResultPeg> result = new List<ResultPeg>();
-            List<ResultPeg> aux = new List<ResultPeg>();
+            Dictionary<int, CodePeg> aux_guess = new Dictionary<int, CodePeg>();
+            Dictionary<int, CodePeg> aux_code = new Dictionary<int, CodePeg>();
+            int count = guess.Count;
 
-            for (int i = 0; i < guess.Count; i++)
+            //Fill our Dictionary of guess
+            for (int i = 0; i < guess.Count; i++) aux_guess.Add(i, guess[i]);
+
+            //Fill our Dictionary of code
+            for (int i = 0; i < code.Count; i++) aux_code.Add(i, code[i]);
+
+            //Black Hints 
+            for (int i = 0; i < count; i++)
             {
-                if (guess[i] == code[i])
+                if (aux_guess[i] == aux_code[i])
                 {
-                    aux.Add(ResultPeg.Black);
-                }else
-                {
-                    if (code.Contains(guess[i])) aux.Add(ResultPeg.White);
+                    result.Add(ResultPeg.Black);
+                    aux_guess.Remove(i);
+                    aux_code.Remove(i);
                 }
             }
 
-            ResultPeg[] allpegs = aux.ToArray();
-            var sortedPegs = allpegs.OrderBy(l => l.ToString());
-
-            foreach(var s in sortedPegs)
+            //White Hints 
+            foreach (var aux in aux_guess)
             {
-                result.Add(s);
+                    if (aux_code.ContainsValue(aux.Value))
+                    {
+                        result.Add(ResultPeg.White);
+                    }
             }
-           
+
             return result;
         }
     }
